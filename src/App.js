@@ -1,25 +1,46 @@
-import logo from './logo.svg';
+import React, { useState } from 'react';
+import GameBoard from './GameBoard';
+import ResetButton from './ResetButton';
+import TryCounter from './TryCounter';
 import './App.css';
 
-function App() {
+const createItems = () => {
+  const items = Array(36).fill().map(() => ({
+    hasItem: false,
+    clicked: false,
+  }));
+  const randomIndex = Math.floor(Math.random() * 36);
+  items[randomIndex].hasItem = true;
+  return items;
+};
+
+const App = () => {
+  const [items, setItems] = useState(createItems());
+  const [tries, setTries] = useState(0);
+
+  const handleCellClick = (index) => {
+    if (items[index].clicked) return;
+
+    const newItems = items.map((item, i) => 
+      i === index ? { ...item, clicked: true } : item
+    );
+
+    setItems(newItems);
+    setTries(tries + 1);
+  };
+
+  const handleReset = () => {
+    setItems(createItems());
+    setTries(0);
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="app">
+      <GameBoard items={items} onCellClick={handleCellClick} />
+      <TryCounter tries={tries} />
+      <ResetButton onReset={handleReset} />
     </div>
   );
-}
+};
 
 export default App;
